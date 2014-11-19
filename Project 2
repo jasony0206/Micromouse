@@ -1,0 +1,83 @@
+//board A
+const int eL =5; //left emitter D5
+const int eFL =4;  //front left emitter D4
+const int eFR =3;  //front right emitter D3
+const int eR =2;  //right emitter D2 
+const int rL =A4; //left receiver
+const int rFL =A3; //front left receiver
+const int rFR =A2; //front right receiver
+const int rR =A1; //right receiver
+
+int getIRValue(const int emitter, const int receiver)
+{
+  int ambientLight = 0;
+  int apparentLight = 0; 
+  digitalWrite(emitter, LOW);
+  ambientLight = analogRead(receiver);
+  digitalWrite(emitter, HIGH);
+  apparentLight = analogRead(receiver);
+  digitalWrite(emitter, LOW);
+  return apparentLight - ambientLight;
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  //emitters
+  pinMode(eL, OUTPUT);
+  pinMode(eFL, OUTPUT);
+  pinMode(eFR, OUTPUT);
+  pinMode(eR, OUTPUT);
+  //receivers
+  pinMode(rL, INPUT);
+  pinMode(rFL, INPUT);
+  pinMode(rFR, INPUT);
+  pinMode(rR, INPUT);  
+}
+
+void loop()
+{
+  //Serial.print("IR Value Is: ");
+  //Serial.print(getIRValue(eFR, rFR));
+  //Serial.print("  ");
+  //Serial.println(getIRValue(eFL, rFL));
+  
+  //task 1
+  //if(getIRValue(eFR, rFR) >= 250)  Serial.print("Wall front\n");  
+  //if(getIRValue(eR, rR) >= 160)  Serial.print("Wall Right\n");
+  //if(getIRValue(eL, rL) >= 80)  Serial.print("Wall Left\n");
+  
+  //task 2
+  double ratioFRL = ((double)getIRValue(eFR, rFR))/getIRValue(eFL, rFL);
+  /*
+  if(ratioFRL > 1.4 ) Serial.println("needs to turn right");
+  else if(ratioFRL < 1.25) Serial.println("needs to turn left");
+   */
+   
+  //task 3
+  
+  double ratioRL = ((double)getIRValue(eR, rR))/getIRValue(eL, rL);
+  /*
+  if(ratioRL > 1.5)
+    Serial.println("closer to the RIGHT WALL");
+  else if(ratioRL < 1.2)
+    Serial.println("closer to the LEFT WALL"); 
+  */
+  
+  //task4
+  //Serial.print(ratioRL);
+  //Serial.print(" ");
+  //Serial.println(ratioFRL);
+  
+  
+  if(ratioRL > 2.6 && (ratioFRL > 1.5 || ratioFRL < 1.38))
+    Serial.println("much closer to the RIGHT WALL");
+  else if(ratioRL < 1.1 && (ratioFRL > 1.5 || ratioFRL < 1.38))
+    Serial.println("much closer to the LEFT WALL"); 
+  else if(ratioRL > 2.1 && (ratioFRL > 1.5 || ratioFRL < 1.38))
+    Serial.println("slightly closer to the RIGHT WALL");
+  else if(ratioRL < 1.4 && (ratioFRL > 1.5 || ratioFRL < 1.38))
+    Serial.println("slightly closer to the LEFT WALL"); 
+  
+  delay(1000);
+}
