@@ -1,0 +1,105 @@
+#include "interrupt.h"
+const int int0 = 0;
+const int int1 = 1;
+const int a1 = 8;    //D8 
+const int a2 = 9;    //D9
+const int a3 = 6;   //D6
+const int a4 = 5;    //D5
+const int motorSL = 11;  //A6
+const int motorSR = 10;  //A7
+
+void moveWheel();
+void turnLeft();
+void turnRight();
+
+void mesR(){
+   Serial.println("Right changed");
+}
+
+void mesL(){
+   Serial.println("Left changed");
+}
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(a1, OUTPUT);
+  pinMode(a2, OUTPUT);
+  pinMode(a3, OUTPUT);  
+  pinMode(a4, OUTPUT);  
+  pinMode(motorSR, OUTPUT);
+  pinMode(motorSL, OUTPUT);
+  attachInterrupt(int1, gotTick, HIGH);
+}
+
+void loop(){
+//  goF();
+//  delay(1000);
+  
+//  if(numTick() > 10 && numTick() <= 20)
+//     goB(); 
+//  else if(numTick() > 20)
+//    stp(); 
+//  else 
+//    goF();
+//  delay(100);
+//  int x = numTick();
+//  Serial.println(x);
+  
+  
+  turnRight();
+  stp();
+  delay(5000);
+  
+}
+
+
+void moveWheel(){
+   analogWrite(motorSL, 128);
+}
+
+void turnRight(){
+  digitalWrite(a1, HIGH);  //LEFT
+  digitalWrite(a2, LOW);    
+  digitalWrite(a3, LOW);    //RIGHT
+  digitalWrite(a4, HIGH);
+  analogWrite(motorSR,255);
+  analogWrite(motorSL,255);
+  delay(430);
+}
+
+void turnLeft(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, HIGH);
+  digitalWrite(a3, HIGH);
+  digitalWrite(a4, LOW);
+  analogWrite(motorSL,255);
+  analogWrite(motorSR,255);
+}
+
+
+void goF(){
+  digitalWrite(a1, HIGH);
+  digitalWrite(a2, LOW);
+  digitalWrite(a3, HIGH);
+  digitalWrite(a4, LOW);
+  analogWrite(motorSL,255);
+  analogWrite(motorSR,255);
+}
+
+void goB(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, HIGH);
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, HIGH);
+  analogWrite(motorSL,255);
+  analogWrite(motorSR,255);  
+}
+
+void stp(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, LOW);
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, LOW);
+  analogWrite(motorSL,0);
+  analogWrite(motorSR,0); 
+}
