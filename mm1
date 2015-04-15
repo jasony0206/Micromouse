@@ -1,0 +1,151 @@
+/*----------------------------INIT PINS/SETUP------------------------*/
+//LEFT WHEEL
+const int leftMotorSpeed = 6;
+const int a1 = 12;
+const int a2 = 11;
+//RIGHT WHEEL
+const int rightMotorSpeed = 5;
+const int a3 = 9;
+const int a4 = 10;
+
+//EMITTERS
+const int leftEmt = 4;
+const int fleftEmt = 23;
+const int frightEmt = 22;
+const int rightEmt = 19;
+//RECEIVERS
+const int leftRcv = 16;
+const int fleftRcv = 17;
+const int frightRcv = 21;
+const int rightRcv = 20;
+
+void setup() {
+  Serial.begin(9600);
+  //WHEELS
+  pinMode(a1, OUTPUT);
+  pinMode(a2, OUTPUT);
+  pinMode(a3, OUTPUT);
+  pinMode(a4, OUTPUT);
+  pinMode(leftMotorSpeed, OUTPUT);
+  pinMode(rightMotorSpeed, OUTPUT);
+  //EMITTERS
+  pinMode(leftEmt, OUTPUT);
+  pinMode(fleftEmt, OUTPUT);
+  pinMode(frightEmt, OUTPUT);
+  pinMode(rightEmt, OUTPUT);
+  //RECEIVERS
+  pinMode(leftRcv, INPUT);
+  pinMode(fleftRcv, INPUT);
+  pinMode(frightRcv, INPUT);
+  pinMode(rightRcv, INPUT);
+}
+
+/*----------------------------MAIN LOOP------------------------------*/
+void loop(){
+  updateWalls();
+  delay(100);
+}
+
+/*----------------------------WHEEL FUNCTIONS------------------------*/
+void goForward(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, HIGH);
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, HIGH);
+  analogWrite(leftMotorSpeed,17);
+  analogWrite(rightMotorSpeed,17);  
+}
+
+void goBackward(){  
+  digitalWrite(a1, HIGH);
+  digitalWrite(a2, LOW);
+  digitalWrite(a3, HIGH);
+  digitalWrite(a4, LOW);  
+  analogWrite(leftMotorSpeed, 17);
+  analogWrite(rightMotorSpeed, 17);  
+}
+
+void turnLeft(){
+  digitalWrite(a1, HIGH);
+  digitalWrite(a2, LOW);    
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, HIGH);
+  analogWrite(leftMotorSpeed,17);
+  analogWrite(rightMotorSpeed,17);
+}
+
+void turnRight(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, HIGH);
+  digitalWrite(a3, HIGH);
+  digitalWrite(a4, LOW);
+  analogWrite(leftMotorSpeed,17);
+  analogWrite(rightMotorSpeed,17);
+}
+
+void stp(){
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, LOW);
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, LOW);
+  analogWrite(leftMotorSpeed,0);
+  analogWrite(rightMotorSpeed,0); 
+}
+
+/*----------------------------SENSOR FUNCTIONS------------------------*/
+int getIR(const int emitter, const int receiver){
+  digitalWrite(emitter, LOW);
+  delay(100); 
+  int ambient = analogRead(receiver);
+  digitalWrite(emitter, HIGH);
+  delay(100);
+  int apparent = analogRead(receiver);
+  digitalWrite(emitter, LOW);
+  return apparent - ambient;
+}
+
+void updateWalls(){
+  digitalWrite(leftEmt, LOW);
+  digitalWrite(fleftEmt, LOW);
+  digitalWrite(rightEmt, LOW);
+  digitalWrite(frightEmt, LOW);
+  delay(100);
+  int leftAmbient = analogRead(leftRcv);
+  int fleftAmbient = analogRead(fleftRcv);
+  int rightAmbient = analogRead(rightRcv);
+  int frightAmbient = analogRead(frightRcv);
+  digitalWrite(leftEmt, HIGH);
+  digitalWrite(fleftEmt, HIGH);
+  digitalWrite(rightEmt, HIGH);
+  digitalWrite(frightEmt, HIGH);
+  delay(100);
+  int leftApparent = analogRead(leftRcv);
+  int fleftApparent = analogRead(fleftRcv);
+  int rightApparent = analogRead(rightRcv);
+  int frightApparent = analogRead(frightRcv);
+    
+  Serial.print("L: ");
+  Serial.print(leftApparent - leftAmbient, DEC);
+  Serial.print("\t");
+  Serial.print("R: ");
+  Serial.print(rightApparent - rightAmbient, DEC);
+  Serial.print("\t");
+  Serial.print("FL: ");
+  Serial.print(fleftApparent - fleftAmbient, DEC);
+  Serial.print("\t");
+  Serial.print("FR: ");
+  Serial.println(frightApparent - frightAmbient, DEC);
+  
+  //L: left, R: right, F: front
+  if(leftApparent - leftAmbient > 700)
+    foundWall('L');
+  if(rightApparent - rightAmbient > 650)
+    foundWall('R');
+  if(frightApparent - frightAmbient > 800)
+    foundWall('F');
+  
+}
+
+void foundWall(const char dir){
+ ; 
+}
